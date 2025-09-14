@@ -26,3 +26,5 @@ v2.0.2:
     - Fix compatibility with v2 rainlab/user plugin
 v2.0.3:
     - Fix compatibility with v2 rainlab/user plugin in subscriptions table
+v2.0.4:
+    - Fix compatibility with v2 rainlab/user plugin in test payable table
