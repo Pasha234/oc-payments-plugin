@@ -20,10 +20,24 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
 
-            $table->foreignId('user_id')
-                ->constrained('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+            $usersTable = (new \RainLab\User\Models\User())->getTable();
+            $usersPkType = Schema::getColumnType($usersTable, 'id');
+
+            if ($usersPkType === 'integer') {
+                $table->integer('user_id')->unsigned()->nullable();
+                $table->foreign('user_id')
+                  ->references('id')
+                  ->on($usersTable)
+                  ->onDelete('set null');
+            } elseif ($usersPkType === 'bigint') {
+                $table->foreignId('user_id')->constrained('users')
+                    ->cascadeOnDelete()
+                    ->cascadeOnUpdate();
+            } else {
+                $table->foreignId('user_id')->constrained('users')
+                    ->cascadeOnDelete()
+                    ->cascadeOnUpdate();
+            }
 
             $table->tinyInteger('type')->default(1);
             $table->boolean('is_recurring')->default(true);

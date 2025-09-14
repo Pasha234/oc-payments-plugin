@@ -24,3 +24,5 @@ v2.0.1:
     - change_payment_method_id_foreign_to_set_null.php
 v2.0.2:
     - Fix compatibility with v2 rainlab/user plugin
+v2.0.3:
+    - Fix compatibility with v2 rainlab/user plugin in subscriptions table
