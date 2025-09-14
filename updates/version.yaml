@@ -1,0 +1,24 @@
+v1.0.1: First version of Payments
+v1.0.2:
+    - Create payments table
+    - create_payments_table.php
+    - create_subscriptions_table.php
+v1.0.3:
+    - Add payment methods for zero amount payment and trial subscriptions
+    - create_payment_methods_table.php
+    - add_is_trial_subscriptions.php
+v1.0.4:
+    - Add unique index for subscriptions
+    - add_unique_index_subscriptions.php
+v1.0.5:
+    - Remove deleted_at column from subscriptions
+    - remove_deleted_at_subscriptions.php
+v2.0.0:
+    - Major update. Refactor the code. Use of clean architecture for better compatibility
+    - drop_subscriptions_table.php
+    - change_payments_fields.php
+    - change_payment_methods_fields.php
+    - create_test_payable_table.php
+v2.0.1:
+    - Change payment_method_id foreign key to use set null constraint
+    - change_payment_method_id_foreign_to_set_null.php

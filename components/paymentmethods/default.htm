@@ -1,0 +1,31 @@
+{% set paymentMethods = __SELF__.paymentMethods %}
+
+<div id="paymentMethodsComponent" class="user-paymentMethods">
+    <h2>{{ "Сохраненные способы оплаты"|_ }}</h2>
+
+    {% if paymentMethods.count > 0 %}
+
+            {% for pm in paymentMethods %}
+                <div class="row">
+                    {{ pm.card_type }} **** {{ pm.last4 }} ({{ pm.expiry_month }}/{{ pm.expiry_year }})
+                    <button
+                        class="b-btn red"
+                        style="float: right;"
+                        data-request="{{ __SELF__ }}::onDelete"
+                        data-request-data="payment_method_id: '{{ pm.id }}'"
+                        data-request-confirm="{{ 'Вы уверены?'|_ }}"
+                        data-request-update="'{{ __SELF__ }}::default': '#paymentMethodsComponent'">
+                        {{ "Удалить"|_ }}
+                    </button>
+                </div>
+            {% endfor %}
+
+    {% else %}
+        <p>{{ "У вас нет сохраненных способов оплаты."|_ }}</p>
+    {% endif %}
+
+    <form data-request="{{ __SELF__ }}::onAdd" data-request-redirect style="margin-top: 20px;">
+        <button type="submit" class="b-btn blue">{{ "Добавить способ оплаты"|_ }}</button>
+    </form>
+</div>
+

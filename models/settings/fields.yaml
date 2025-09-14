@@ -1,0 +1,18 @@
+# ===================================
+#  Field Definitions
+# ===================================
+
+tabs:
+    fields:
+        more_logs:
+            label: Больше логов
+            type: checkbox
+            tab: Платежи
+
+        yookassa_shop_id:
+            label: ЮКасса shop id
+            tab: Платежи
+
+        yookassa_secret_key:
+            label: ЮКасса secret key
+            tab: Платежи

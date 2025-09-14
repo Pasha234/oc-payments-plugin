@@ -1,0 +1,135 @@
+<?php
+
+namespace PalPalych\Payments\Tests\Unit\Application\Usecase\Payment;
+
+use Mockery;
+use RuntimeException;
+use ReflectionProperty;
+use Tests\ComponentTestCase;
+use PalPalych\Payments\Classes\Domain\Entity\Payment;
+use PalPalych\Payments\Tests\Unit\Entities\TestPayableEntity;
+use PalPalych\Payments\Classes\Domain\Contract\PayableInterface;
+use PalPalych\Payments\Classes\Domain\Gateway\PaymentGatewayInterface;
+use PalPalych\Payments\Classes\Application\Dto\Request\CreatePaymentRequest;
+use PalPalych\Payments\Classes\Domain\Repository\PayableRepositoryInterface;
+use PalPalych\Payments\Classes\Domain\Repository\PaymentRepositoryInterface;
+use PalPalych\Payments\Classes\Domain\Dto\Gateway\CreatePaymentGatewayResponse;
+use PalPalych\Payments\Classes\Application\Usecase\Payment\CreatePaymentUseCase;
+
+class CreatePaymentUseCaseTest extends ComponentTestCase
+{
+    private Mockery\MockInterface|PaymentRepositoryInterface $paymentRepository;
+    private Mockery\MockInterface|PaymentGatewayInterface $paymentGateway;
+    private Mockery\MockInterface|PayableRepositoryInterface $payableRepository;
+    private CreatePaymentUseCase $useCase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->paymentRepository = Mockery::mock(PaymentRepositoryInterface::class);
+        $this->paymentGateway = Mockery::mock(PaymentGatewayInterface::class);
+        $this->payableRepository = Mockery::mock(PayableRepositoryInterface::class);
+
+        $this->useCase = new CreatePaymentUseCase(
+            $this->paymentRepository,
+            $this->paymentGateway,
+            $this->payableRepository
+        );
+    }
+
+    public function test_it_throws_exception_for_invalid_payable_type()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Invalid payable type: InvalidPayable');
+
+        $request = new CreatePaymentRequest(
+            userId: 1,
+            payableId: 1,
+            payableType: 'InvalidPayable',
+            success_url: 'http://example.com/success',
+            client_email: 'test@mail.com',
+        );
+
+        ($this->useCase)($request);
+    }
+
+    public function test_it_throws_exception_if_payable_not_found()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Payable entity not found with Type: PalPalych\Payments\Tests\Unit\Entities\TestPayableEntity and ID: 999');
+
+        $this->payableRepository
+            ->shouldReceive('findById')
+            ->with(999, TestPayableEntity::class)
+            ->once()
+            ->andReturnNull();
+
+        $request = new CreatePaymentRequest(
+            userId: 1,
+            payableId: 999,
+            payableType: TestPayableEntity::class,
+            success_url: 'http://example.com/success',
+            client_email: 'test@mail.com',
+        );
+
+        ($this->useCase)($request);
+    }
+
+    public function test_it_successfully_creates_a_payment()
+    {
+        $userId = 1;
+        $userEmail = 'test@mail.com';
+        $payableId = 123;
+        $payableType = TestPayableEntity::class;
+        $successUrl = 'http://example.com/success';
+        $paymentId = 456;
+        $confirmationUrl = 'http://yookassa.ru/confirmation';
+
+        $request = new CreatePaymentRequest(
+            $userId,
+            $payableId,
+            $payableType,
+            $successUrl,
+            $userEmail,
+        );
+
+        $payable = Mockery::mock(PayableInterface::class);
+        $payable->shouldReceive('getPayableAmount')
+            ->once()
+            ->andReturn(100);
+
+        $payable->shouldReceive('getPayableDescription')
+            ->once()
+            ->andReturn('Test description');
+
+        $this->payableRepository->shouldReceive('findById')->with($payableId, $payableType)->once()->andReturn($payable);
+
+        $this->paymentRepository
+            ->shouldReceive('save')
+            ->twice()
+            ->with(Mockery::on(function (Payment $payment) use ($userId, $payableId, $payableType, $paymentId) {
+                $this->assertEquals($userId, $payment->getUserId());
+                $this->assertEquals($payableId, $payment->getPayableId());
+                $this->assertEquals($payableType, $payment->getPayableType());
+
+                // Simulate setting the ID on save, as the repository would
+                $reflectionId = new ReflectionProperty($payment, 'id');
+                $reflectionId->setAccessible(true);
+                $reflectionId->setValue($payment, $paymentId);
+
+                return true;
+            }));
+
+        $gatewayResponse = new CreatePaymentGatewayResponse('{}', '{}', 'gw_123', 'idem_123', $confirmationUrl);
+
+        $this->paymentGateway
+            ->shouldReceive('createPayment')
+            ->once()
+            ->andReturn($gatewayResponse);
+
+        $response = ($this->useCase)($request);
+
+        $this->assertEquals($confirmationUrl, $response->confirmation_url);
+    }
+}

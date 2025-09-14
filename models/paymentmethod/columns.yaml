@@ -1,0 +1,22 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    id:
+        label: ID
+        searchable: true
+    user:
+        label: Пользователь
+        relation: user
+        select: first_name
+    created_at:
+        label: Дата создания
+        type: datetime
+    accepted_at:
+        label: Время принятия
+        type: datetime
+    status_label:
+        label: Статус
+        valueFrom: status
+        displayFrom: status_label

@@ -1,0 +1,45 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+tabs:
+    fields:
+        gateway_request_json:
+            label: "Данные запроса на оплату"
+            span: left
+            type: partial
+            path: gateway_request_json
+            tab: "Оплата"
+
+        gateway_response_json:
+            label: "Данные ответа платежного шлюза"
+            span: right
+            type: partial
+            path: gateway_response_json
+            tab: "Оплата"
+
+secondaryTabs:
+    fields:
+        user:
+            label: Пользователь
+            type: relation
+            emptyOption: Не выбрано
+            nameFrom: username
+        total_formatted:
+            label: Общая сумма
+            disabled: true
+        idempotence_key:
+            label: Ключ идемпотентности
+            readOnly: true
+            span: full
+        gateway_id:
+            label: ID из платежного шлюза
+            readOnly: true
+            span: full
+        paid_at:
+            label: Время оплаты
+            type: datepicker
+            mode: datetime
+        status:
+            label: Статус
+            type: dropdown

@@ -1,0 +1,11 @@
+<div id="gateway_response_json_field"></div>
+<?php
+try {
+    $gateway_response = json_encode($formModel->gateway_response);
+} catch (Illuminate\Contracts\Encryption\DecryptException $e) {
+    $gateway_response = "";
+}
+?>
+<script>
+    $("#gateway_response_json_field").jJsonViewer('<?= $gateway_response ?>');
+</script>

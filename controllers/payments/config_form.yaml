@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Платеж
+
+# Model Form Field configuration
+form: $/palpalych/payments/models/payment/fields.yaml
+
+# Model Class name
+modelClass: PalPalych\Payments\Models\Payment
+
+# Default redirect location
+defaultRedirect: palpalych/payments/payments
+
+# Create page
+create:
+    title: backend::lang.form.create_title
+    redirect: palpalych/payments/payments/update/:id
+    redirectClose: palpalych/payments/payments
+
+# Update page
+update:
+    title: backend::lang.form.update_title
+    redirect: palpalych/payments/payments
+    redirectClose: palpalych/payments/payments
+
+# Preview page
+preview:
+    title: backend::lang.form.preview_title
