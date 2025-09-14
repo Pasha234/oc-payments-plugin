@@ -18,9 +18,26 @@ return new class extends Migration
     {
         Schema::create('palpalych_payments_payment_methods', function(Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+
+            $usersTable = (new \RainLab\User\Models\User())->getTable();
+            $usersPkType = Schema::getColumnType($usersTable, 'id');
+
+            if ($usersPkType === 'integer') {
+                $table->integer('user_id')->unsigned()->nullable();
+                $table->foreign('user_id')
+                  ->references('id')
+                  ->on($usersTable)
+                  ->onDelete('set null');
+            } elseif ($usersPkType === 'bigint') {
+                $table->foreignId('user_id')->constrained('users')
+                    ->cascadeOnDelete()
+                    ->cascadeOnUpdate();
+            } else {
+                $table->foreignId('user_id')->constrained('users')
+                    ->cascadeOnDelete()
+                    ->cascadeOnUpdate();
+            }
+
             $table->string('transaction_id')->nullable();
             $table->text('payment_data')->nullable();
             $table->text('payment_response')->nullable();

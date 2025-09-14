@@ -22,3 +22,5 @@ v2.0.0:
 v2.0.1:
     - Change payment_method_id foreign key to use set null constraint
     - change_payment_method_id_foreign_to_set_null.php
+v2.0.2:
+    - Fix compatibility with v2 rainlab/user plugin
