@@ -30,3 +30,5 @@ v2.0.4:
     - Fix compatibility with v2 rainlab/user plugin in test payable table
 v2.0.5:
     - Add yookassa package in composer.json
+v2.0.6:
+    - Quick fix status output

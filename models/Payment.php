@@ -99,4 +99,9 @@ class Payment extends Model
     {
         return number_format($this->total / 100, 2, thousands_separator: '');
     }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->getStatusOptions()[$this->status->value] ?? $this->status->name;
+    }
 }
