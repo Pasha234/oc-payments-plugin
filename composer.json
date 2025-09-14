@@ -3,6 +3,12 @@
     "type": "october-plugin",
     "description": "No description provided yet...",
     "require": {
-        "composer/installers": "~1.0"
+        "composer/installers": "~1.0",
+        "yoomoney/yookassa-sdk-php": "^3.10"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
     }
 }

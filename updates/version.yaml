@@ -28,3 +28,5 @@ v2.0.3:
     - Fix compatibility with v2 rainlab/user plugin in subscriptions table
 v2.0.4:
     - Fix compatibility with v2 rainlab/user plugin in test payable table
+v2.0.5:
+    - Add yookassa package in composer.json
