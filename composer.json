@@ -6,6 +6,9 @@
         "composer/installers": "~1.0",
         "yoomoney/yookassa-sdk-php": "^3.10"
     },
+    "require-dev": {
+        "mockery/mockery": "^1.6"
+    },
     "config": {
         "allow-plugins": {
             "composer/installers": true

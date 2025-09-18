@@ -34,3 +34,5 @@ v2.0.6:
     - Quick fix status output
 v2.0.7:
     - Fix console command for checking payment and payment methods
+v2.0.8:
+    - Fix tests for different projects

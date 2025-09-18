@@ -7,7 +7,7 @@ use PalPalych\Payments\Classes\Application\Dto\Request\CheckPaymentRequest;
 use PalPalych\Payments\Classes\Application\Usecase\Payment\CheckPaymentUseCase;
 use PalPalych\Payments\Classes\Domain\Enum\PaymentStatus;
 use PalPalych\Payments\Models\Payment;
-use Palpalych\Stories\Models\Tests\Factories\UserFactory;
+use PalPalych\Payments\Tests\Models\Factory\UserFactory;
 use RainLab\User\Models\User;
 use Tests\ComponentTestCase;
 use YooKassa\Model\Payment\PaymentInterface;
@@ -23,7 +23,7 @@ class CheckPaymentUseCaseIntegrationTest extends ComponentTestCase
     {
         // 1. Arrange
         /** @var User $user */
-        $user = UserFactory::new()->create();
+        $user = app(UserFactory::class)->create();
         /** @var Payment $payment */
         $payment = Payment::factory()->create([
             'user_id' => $user->id,
@@ -69,7 +69,7 @@ class CheckPaymentUseCaseIntegrationTest extends ComponentTestCase
     {
         // 1. Arrange
         /** @var User $user */
-        $user = UserFactory::new()->create();
+        $user = app(UserFactory::class)->create();
         /** @var Payment $payment */
         $payment = Payment::factory()->create([
             'user_id' => $user->id,
@@ -115,7 +115,7 @@ class CheckPaymentUseCaseIntegrationTest extends ComponentTestCase
     {
         // 1. Arrange
         /** @var User $user */
-        $user = UserFactory::new()->create();
+        $user = app(UserFactory::class)->create();
         /** @var Payment $payment */
         $payment = Payment::factory()->create([
             'user_id' => $user->id,
@@ -162,7 +162,7 @@ class CheckPaymentUseCaseIntegrationTest extends ComponentTestCase
     {
         // 1. Arrange
         /** @var User $user */
-        $user = UserFactory::new()->create();
+        $user = app(UserFactory::class)->create();
         /** @var Payment $payment */
         $payment = Payment::factory()->create([
             'user_id' => $user->id,

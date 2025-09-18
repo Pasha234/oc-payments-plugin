@@ -5,7 +5,7 @@ namespace PalPalych\Payments\Tests\Integration\Console;
 use Mockery;
 use PalPalych\Payments\Classes\Domain\Enum\PaymentMethodStatus;
 use PalPalych\Payments\Models\PaymentMethod;
-use Palpalych\Stories\Models\Tests\Factories\UserFactory;
+use PalPalych\Payments\Tests\Models\Factory\UserFactory;
 use Tests\ComponentTestCase;
 use YooKassa\Client\ApiClientInterface;
 use YooKassa\Common\ResponseObject;
@@ -20,7 +20,7 @@ class CheckPendingPaymentMethodsIntegrationTest extends ComponentTestCase
     public function test_it_checks_pending_payment_methods_and_updates_statuses()
     {
         // 1. Arrange
-        $user = UserFactory::new()->create();
+        $user = app(UserFactory::class)->create();
 
         // Create payment methods with different outcomes
         $pmToSucceed = PaymentMethod::factory()->create([

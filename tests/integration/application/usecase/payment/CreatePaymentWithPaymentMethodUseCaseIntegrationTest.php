@@ -9,7 +9,7 @@ use PalPalych\Payments\Classes\Domain\Enum\PaymentStatus;
 use PalPalych\Payments\Models\Payment;
 use PalPalych\Payments\Models\PaymentMethod;
 use PalPalych\Payments\Tests\Models\TestPayable;
-use Palpalych\Stories\Models\Tests\Factories\UserFactory;
+use PalPalych\Payments\Tests\Models\Factory\UserFactory;
 use RainLab\User\Models\User;
 use Tests\ComponentTestCase;
 use YooKassa\Request\Payments\CreatePaymentResponse;
@@ -25,7 +25,7 @@ class CreatePaymentWithPaymentMethodUseCaseIntegrationTest extends ComponentTest
     {
         // 1. Arrange
         /** @var User $user */
-        $user = UserFactory::new()->create();
+        $user = app(UserFactory::class)->create();
         /** @var TestPayable $payable */
         $payable = TestPayable::factory()->create(['user_id' => $user->id]);
         /** @var PaymentMethod $paymentMethod */

@@ -8,7 +8,7 @@ use PalPalych\Payments\Classes\Application\Usecase\Payment\CreatePaymentUseCase;
 use PalPalych\Payments\Models\Payment;
 use PalPalych\Payments\Models\PaymentMethod;
 use PalPalych\Payments\Tests\Models\TestPayable;
-use Palpalych\Stories\Models\Tests\Factories\UserFactory;
+use PalPalych\Payments\Tests\Models\Factory\UserFactory;
 use RainLab\User\Models\User;
 use Tests\ComponentTestCase;
 use YooKassa\Model\Payment\Confirmation\AbstractConfirmation;
@@ -25,7 +25,7 @@ class CreatePaymentUseCaseIntegrationTest extends ComponentTestCase
     {
         // 1. Arrange
         /** @var User $user */
-        $user = UserFactory::new()->create();
+        $user = app(UserFactory::class)->create();
         /** @var TestPayable $payable */
         $payable = TestPayable::factory()->create(['user_id' => $user->id]);
 

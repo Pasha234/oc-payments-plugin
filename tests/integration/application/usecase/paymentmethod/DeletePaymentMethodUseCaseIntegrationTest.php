@@ -5,7 +5,7 @@ namespace PalPalych\Payments\Tests\Integration\Application\Usecase\PaymentMethod
 use PalPalych\Payments\Classes\Application\Dto\Request\DeletePaymentMethodRequest;
 use PalPalych\Payments\Classes\Application\Usecase\PaymentMethod\DeletePaymentMethodUseCase;
 use PalPalych\Payments\Models\PaymentMethod;
-use Palpalych\Stories\Models\Tests\Factories\UserFactory;
+use PalPalych\Payments\Tests\Models\Factory\UserFactory;
 use RainLab\User\Models\User;
 use RuntimeException;
 use Tests\ComponentTestCase;
@@ -21,7 +21,7 @@ class DeletePaymentMethodUseCaseIntegrationTest extends ComponentTestCase
     {
         // 1. Arrange
         /** @var User $user */
-        $user = UserFactory::new()->create();
+        $user = app(UserFactory::class)->create();
         /** @var PaymentMethod $paymentMethod */
         $paymentMethod = PaymentMethod::factory()->create([
             'user_id' => $user->id,

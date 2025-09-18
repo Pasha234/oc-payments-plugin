@@ -18,6 +18,7 @@ use PalPalych\Payments\Classes\Infrastructure\Event\LaravelEventDispatcher;
 use PalPalych\Payments\Classes\Infrastructure\Repository\EloquentPayableRepository;
 use PalPalych\Payments\Classes\Infrastructure\Repository\EloquentPaymentRepository;
 use PalPalych\Payments\Classes\Infrastructure\Repository\EloquentPaymentMethodRepository;
+use PalPalych\Payments\Tests\Models\Factory\UserFactory;
 
 /**
  * Plugin Information File
@@ -59,6 +60,11 @@ class Plugin extends PluginBase
             );
             return $yookassa;
         });
+
+        if ($this->app->runningUnitTests()) {
+            $this->app->bind(UserFactory::class, fn () => UserFactory::new());
+        }
+
         $this->registerConsoleCommand('palpalych.payments.check.payments', CheckPendingPayments::class);
         $this->registerConsoleCommand('palpalych.payments.check.payment_methods', CheckPendingPaymentMethods::class);
     }

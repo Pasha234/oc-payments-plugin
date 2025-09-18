@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use PalPalych\Payments\Classes\Domain\Enum\PaymentMethodStatus;
 use PalPalych\Payments\Models\PaymentMethod;
-use Palpalych\Stories\Models\Tests\Factories\UserFactory;
+use PalPalych\Payments\Tests\Models\Factory\UserFactory;
 
 /**
  * @template-extends Factory<PaymentMethod>
@@ -18,7 +18,7 @@ class PaymentMethodFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => UserFactory::new(),
+            'user_id' => app(UserFactory::class),
             'idempotence_key' => $this->faker->uuid(),
             'status' => PaymentMethodStatus::pending,
             'card_type' => $this->faker->word(),

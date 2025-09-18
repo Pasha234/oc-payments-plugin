@@ -4,7 +4,7 @@ namespace PalPalych\Payments\Tests\Models\Factory;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use PalPalych\Payments\Tests\Models\TestPayable;
-use Palpalych\Stories\Models\Tests\Factories\UserFactory;
+use PalPalych\Payments\Tests\Models\Factory\UserFactory;
 
 /**
  * @template-extends Factory<TestPayable>
@@ -16,7 +16,7 @@ class TestPayableFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => UserFactory::new(),
+            'user_id' => app(UserFactory::class),
             'paid' => false,
         ];
     }

@@ -6,7 +6,7 @@ use Mockery;
 use PalPalych\Payments\Classes\Application\Dto\Request\CreatePaymentMethodRequest;
 use PalPalych\Payments\Classes\Application\Usecase\PaymentMethod\CreatePaymentMethodUseCase;
 use PalPalych\Payments\Models\PaymentMethod;
-use Palpalych\Stories\Models\Tests\Factories\UserFactory;
+use PalPalych\Payments\Tests\Models\Factory\UserFactory;
 use RainLab\User\Models\User;
 use Tests\ComponentTestCase;
 use YooKassa\Client\ApiClientInterface;
@@ -23,7 +23,7 @@ class CreatePaymentMethodUseCaseIntegrationTest extends ComponentTestCase
     {
         // 1. Arrange
         /** @var User $user */
-        $user = UserFactory::new()->create();
+        $user = app(UserFactory::class)->create();
 
         $confirmationUrl = 'http://yookassa.ru/confirmation/pm';
         $gatewayId = 'pm_12345';
