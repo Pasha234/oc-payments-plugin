@@ -32,3 +32,5 @@ v2.0.5:
     - Add yookassa package in composer.json
 v2.0.6:
     - Quick fix status output
+v2.0.7:
+    - Fix console command for checking payment and payment methods

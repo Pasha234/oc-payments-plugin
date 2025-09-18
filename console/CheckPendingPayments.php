@@ -2,10 +2,10 @@
 
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 use PalPalych\Payments\Models\Payment;
-use PalPalych\Payments\Classes\YooKassa;
-use PalPalych\Payments\Models\Payment\PaymentStatus;
+use PalPalych\Payments\Classes\Domain\Enum\PaymentStatus;
+use PalPalych\Payments\Classes\Application\Dto\Request\CheckPaymentRequest;
+use PalPalych\Payments\Classes\Application\Usecase\Payment\CheckPaymentUseCase;
 
 /**
  * CheckPayments Command
@@ -22,43 +22,47 @@ class CheckPendingPayments extends Command
     /**
      * @var string description is the console command description
      */
-    protected $description = 'Check status of pending payments through yookassa API';
+    protected $description = 'Check status of pending payments through the configured payment gateway.';
 
     /**
      * handle executes the console command.
      */
     public function handle()
     {
-        $yk = new YooKassa();
-
         $payments = Payment::where('status', PaymentStatus::pending->value)
             ->get();
+
+        if ($payments->isEmpty()) {
+            $this->info('No pending payments to check.');
+            return;
+        }
 
         $paymentSuccess = 0;
         $paymentCanceled = 0;
         $paymentPending = 0;
         $paymentError = 0;
+
+        /** @var CheckPaymentUseCase $useCase */
+        $useCase = app(CheckPaymentUseCase::class);
+
         foreach ($payments as $payment) {
             try {
-                $yk->checkPayment($payment);
-                if ($payment->status == PaymentStatus::success) {
-                    $paymentSuccess++;
-                } else if ($payment->status == PaymentStatus::canceled) {
-                    $paymentCanceled++;
-                } else {
-                    $paymentPending++;
-                }
+                $response = $useCase(new CheckPaymentRequest($payment->id));
+                $payment->reload(); // Reload to get the updated status from the database
+
+                if ($payment->status === PaymentStatus::success) $paymentSuccess++;
+                elseif ($payment->status === PaymentStatus::canceled) $paymentCanceled++;
+                else $paymentPending++;
             } catch (Exception $e) {
                 report($e);
                 $paymentError++;
             }
         }
 
-        $message = "Payments success: {$paymentSuccess}". PHP_EOL .
-            "Payments waiting for response: {$paymentPending}" . PHP_EOL .
-            "Payments canceled: {$paymentCanceled}" . PHP_EOL .
-            "Payments with error: {$paymentError}";
-
-        $this->output->writeln($message);
+        $this->info("Payments checked: {$payments->count()}");
+        $this->info(" - Success: {$paymentSuccess}");
+        $this->info(" - Canceled: {$paymentCanceled}");
+        $this->info(" - Still Pending: {$paymentPending}");
+        $this->warn(" - Errors: {$paymentError}");
     }
 }

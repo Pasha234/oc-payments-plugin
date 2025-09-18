@@ -2,10 +2,10 @@
 
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use PalPalych\Payments\Classes\YooKassa;
-use PalPalych\Payments\Models\Payment\PaymentStatus;
 use PalPalych\Payments\Models\PaymentMethod;
+use PalPalych\Payments\Classes\Domain\Enum\PaymentMethodStatus;
+use PalPalych\Payments\Classes\Application\Dto\Request\CheckPaymentMethodRequest;
+use PalPalych\Payments\Classes\Application\Usecase\PaymentMethod\CheckPaymentMethodUseCase;
 
 /**
  * CheckPayments Command
@@ -22,43 +22,47 @@ class CheckPendingPaymentMethods extends Command
     /**
      * @var string description is the console command description
      */
-    protected $description = 'Check status of pending payment methods through yookassa API';
+    protected $description = 'Check status of pending payment methods through the configured payment gateway.';
 
     /**
      * handle executes the console command.
      */
     public function handle()
     {
-        $yk = new YooKassa();
-
-        $paymentMethods = PaymentMethod::where('status', PaymentStatus::pending->value)
+        $paymentMethods = PaymentMethod::where('status', PaymentMethodStatus::pending->value)
             ->get();
 
-        $paymentSuccess = 0;
-        $paymentCanceled = 0;
-        $paymentPending = 0;
-        $paymentError = 0;
+        if ($paymentMethods->isEmpty()) {
+            $this->info('No pending payment methods to check.');
+            return;
+        }
+
+        $successCount = 0;
+        $canceledCount = 0;
+        $pendingCount = 0;
+        $errorCount = 0;
+
+        /** @var CheckPaymentMethodUseCase $useCase */
+        $useCase = app(CheckPaymentMethodUseCase::class);
+
         foreach ($paymentMethods as $paymentMethod) {
             try {
-                $yk->checkPaymentMethod($paymentMethod);
-                if ($paymentMethod->status == PaymentStatus::success) {
-                    $paymentSuccess++;
-                } else if ($paymentMethod->status == PaymentStatus::canceled) {
-                    $paymentCanceled++;
-                } else {
-                    $paymentPending++;
-                }
+                $useCase(new CheckPaymentMethodRequest($paymentMethod->id));
+                $paymentMethod->reload(); // Reload to get the updated status from the database
+
+                if ($paymentMethod->status === PaymentMethodStatus::success) $successCount++;
+                elseif ($paymentMethod->status === PaymentMethodStatus::canceled) $canceledCount++;
+                else $pendingCount++;
             } catch (Exception $e) {
                 report($e);
-                $paymentError++;
+                $errorCount++;
             }
         }
 
-        $message = "Payment methods success: {$paymentSuccess}". PHP_EOL .
-            "Payment methods waiting for response: {$paymentPending}" . PHP_EOL .
-            "Payment methods canceled: {$paymentCanceled}" . PHP_EOL .
-            "Payment methods with error: {$paymentError}";
-
-        $this->output->writeln($message);
+        $this->info("Payment methods checked: {$paymentMethods->count()}");
+        $this->info(" - Activated: {$successCount}");
+        $this->info(" - Canceled: {$canceledCount}");
+        $this->info(" - Still Pending: {$pendingCount}");
+        $this->warn(" - Errors: {$errorCount}");
     }
 }
