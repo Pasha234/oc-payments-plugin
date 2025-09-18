@@ -9,6 +9,7 @@ class CheckPaymentGatewayResponse
     public function __construct(
         public PaymentStatus $status,
         public string $gateway_response,
+        public ?string $confirmation_url = null,
     )
     {
 

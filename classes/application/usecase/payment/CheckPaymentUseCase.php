@@ -2,14 +2,15 @@
 
 namespace PalPalych\Payments\Classes\Application\Usecase\Payment;
 
+use PalPalych\Payments\Models\Payment as PaymentModel;
 use PalPalych\Payments\Classes\Domain\Enum\PaymentStatus;
-use PalPalych\Payments\Classes\Domain\Event\EventDispatcherInterface;
 use PalPalych\Payments\Classes\Domain\Event\PaymentSucceeded;
+use PalPalych\Payments\Classes\Domain\Event\EventDispatcherInterface;
 use PalPalych\Payments\Classes\Domain\Gateway\PaymentGatewayInterface;
 use PalPalych\Payments\Classes\Application\Dto\Request\CheckPaymentRequest;
 use PalPalych\Payments\Classes\Domain\Repository\PayableRepositoryInterface;
 use PalPalych\Payments\Classes\Domain\Repository\PaymentRepositoryInterface;
-use PalPalych\Payments\Models\Payment as PaymentModel;
+use PalPalych\Payments\Classes\Application\Dto\Response\CheckPaymentResponse;
 
 class CheckPaymentUseCase
 {
@@ -24,7 +25,7 @@ class CheckPaymentUseCase
     /**
      * @throws \RuntimeException
      */
-    public function __invoke(CheckPaymentRequest $request): void
+    public function __invoke(CheckPaymentRequest $request): CheckPaymentResponse
     {
         $payment = $this->paymentRepository->findById(
             $request->payment_id,
@@ -57,5 +58,10 @@ class CheckPaymentUseCase
         }
 
         $this->paymentRepository->save($payment);
+
+        return new CheckPaymentResponse(
+            $checkPaymentResponse->status,
+            $checkPaymentResponse->confirmation_url
+        );
     }
 }

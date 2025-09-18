@@ -21,6 +21,7 @@ use PalPalych\Payments\Classes\Domain\Dto\Gateway\CreatePaymentGatewayRequest;
 use PalPalych\Payments\Classes\Domain\Dto\Gateway\CreatePaymentMethodGatewayResponse;
 use PalPalych\Payments\Classes\Domain\Dto\Gateway\CreatePaymentWithPaymentMethodGatewayRequest;
 use PalPalych\Payments\Classes\Domain\Dto\Gateway\CreatePaymentWithPaymentMethodGatewayResponse;
+use YooKassa\Model\Payment\ConfirmationType;
 use YooKassa\Request\Payments\CreatePaymentRequest;
 use YooKassa\Request\Payments\CreatePaymentRequestBuilder;
 
@@ -166,9 +167,18 @@ class YooKassaGateway implements PaymentGatewayInterface
             default => PaymentStatus::failed,
         };
 
+        $confirmationUrl = null;
+        if ($status === PaymentStatus::pending) {
+            $confirmation = $paymentInfo->getConfirmation();
+            if ($confirmation && $confirmation->getType() === ConfirmationType::REDIRECT) {
+                $confirmationUrl = $confirmation->getConfirmationUrl();
+            }
+        }
+
         return new CheckPaymentGatewayResponse(
             $status,
-            json_encode($paymentInfo)
+            json_encode($paymentInfo),
+            $confirmationUrl,
         );
     }
 
